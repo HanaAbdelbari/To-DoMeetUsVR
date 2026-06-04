@@ -1,6 +1,8 @@
 package com.marketplace.todomeetusvr.dto;
 
+import com.marketplace.todomeetusvr.model.TaskStatus;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -11,6 +13,6 @@ public class TaskRequest {
 
     private String description;
 
-    @NotBlank(message = "Status is required")
-    private String status;
+    @NotNull(message = "Status is required")
+    private TaskStatus status;
 }

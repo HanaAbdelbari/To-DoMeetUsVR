@@ -2,6 +2,8 @@ package com.marketplace.todomeetusvr.service;
 
 import com.marketplace.todomeetusvr.dto.LoginRequest;
 import com.marketplace.todomeetusvr.dto.RegisterRequest;
+import com.marketplace.todomeetusvr.dto.AuthResponse;
+import com.marketplace.todomeetusvr.dto.RegisterResponse;
 import com.marketplace.todomeetusvr.model.User;
 import com.marketplace.todomeetusvr.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +20,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    public void register(RegisterRequest request) {
+    public RegisterResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use");
         }
@@ -29,10 +31,11 @@ public class AuthService {
                 .name(request.getName())
                 .build();
 
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        return RegisterResponse.fromUser(savedUser);
     }
 
-    public String login(LoginRequest request) {
+    public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.UNAUTHORIZED, "Invalid email or password"));
@@ -41,6 +44,7 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
         }
 
-        return jwtService.generateToken(user.getEmail());
+        String token = jwtService.generateToken(user.getEmail());
+        return AuthResponse.of(token, user.getName(), user.getEmail());
     }
 }

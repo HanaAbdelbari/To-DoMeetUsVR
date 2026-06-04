@@ -1,7 +1,7 @@
 package com.marketplace.todomeetusvr.controller;
 
 import com.marketplace.todomeetusvr.dto.TaskRequest;
-import com.marketplace.todomeetusvr.model.Task;
+import com.marketplace.todomeetusvr.dto.TaskResponse;
 import com.marketplace.todomeetusvr.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,22 +24,21 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@Valid @RequestBody TaskRequest request) {
-        Task task = taskService.createTask(request, getCurrentUserEmail());
-        return ResponseEntity.status(HttpStatus.CREATED).body(task);
+    public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody TaskRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(taskService.createTask(request, getCurrentUserEmail()));
     }
 
     @GetMapping
-    public ResponseEntity<List<Task>> getAllTasks() {
-        List<Task> tasks = taskService.getAllTasks(getCurrentUserEmail());
-        return ResponseEntity.ok(tasks);
+    public ResponseEntity<List<TaskResponse>> getAllTasks() {
+        return ResponseEntity.ok(taskService.getAllTasks(getCurrentUserEmail()));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable Long id,
-                                           @Valid @RequestBody TaskRequest request) {
-        Task updated = taskService.updateTask(id, request, getCurrentUserEmail());
-        return ResponseEntity.ok(updated);
+    public ResponseEntity<TaskResponse> updateTask(@PathVariable Long id,
+                                                   @Valid @RequestBody TaskRequest request) {
+        return ResponseEntity.ok(taskService.updateTask(id, request, getCurrentUserEmail()));
     }
 
     @DeleteMapping("/{id}")
